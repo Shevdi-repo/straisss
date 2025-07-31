@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Langkah 1: Pindai Wajah</title>
+    <style>
+        body { font-family: sans-serif; background-color: #0c111f; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; text-align: center; }
+        .camera-section { background-color: #1a2035; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; }
+        h2 { border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 0; }
+        p { color: #ccc; }
+        
+        /* --- PERUBAHAN CSS DI SINI --- */
+        video {
+            width: 300px;  /* Atur lebar */
+            height: 300px; /* Atur tinggi agar sama dengan lebar */
+            border-radius: 50%; /* Ini yang membuat video menjadi bulat */
+            object-fit: cover; /* Memastikan video mengisi frame tanpa distorsi */
+            background-color: #000;
+            margin: 15px auto; /* Menengahkan video */
+        }
+        /* ----------------------------- */
+        
+        #submitBtn { width: 100%; padding: 15px; font-size: 1.2em; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; transition: background-color 0.3s; }
+        #submitBtn:hover { background-color: #0056b3; }
+        #submitBtn:disabled { background-color: #555; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="camera-section">
+        <h2>Pindai Wajah Anda</h2>
+        <p>Posisikan wajah Anda di tengah kamera dengan pencahayaan yang baik, lalu klik tombol di bawah.</p>
+        <video id="video" autoplay playsinline></video>
+        
+        <form id="scanForm" action="/show_form" method="post">
+            <input type="hidden" name="image_data" id="imageData">
+            <button type="submit" id="submitBtn">Pindai</button>
+        </form>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const form = document.getElementById('scanForm');
+        const imageDataInput = document.getElementById('imageData');
+        const submitBtn = document.getElementById('submitBtn');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("Error accessing camera: ", err);
+                alert("Tidak bisa mengakses kamera. Mohon berikan izin.");
+            });
+        
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Memproses...';
+
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            imageDataInput.value = canvas.toDataURL('image/jpeg');
+            
+            form.submit();
+        });
+    </script>
+</body>
+</html>

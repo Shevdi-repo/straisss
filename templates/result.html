@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Deteksi Stres</title>
+    <style>
+        body { font-family: sans-serif; background-color: #0c111f; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; text-align: left; padding: 20px 0; }
+        .container { display: flex; flex-direction: column; gap: 20px; max-width: 700px; margin: auto; }
+        .result-container, .solution-container { padding: 30px; background-color: #1a2035; border-radius: 12px; }
+        h1, h2 { text-align: center; }
+        .percentage { font-size: 2.5em; font-weight: bold; margin-bottom: 5px; text-align: center; }
+        .label { font-size: 1.5em; color: #00ffdd; margin-bottom: 30px; text-align: center; }
+        .button { display: block; width: 80%; margin: 15px auto; padding: 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-size: 1.1em; transition: background-color 0.3s; text-align: center; cursor: pointer; border: none; }
+        .button:hover { background-color: #0056b3; }
+        .button.secondary { background-color: transparent; border: 1px solid #007bff; }
+        .button:disabled { background-color: #555; cursor: not-allowed; }
+        .solution-container h2 { border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .solution-text { line-height: 1.6; color: #e0e0e0; white-space: pre-wrap; }
+        .disclaimer { font-size: 0.8em; color: #aaa; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-container">
+            <h1>Deteksi Stres Anda</h1>
+            <div class="percentage">Persentase Stres: {{ percentage }}%</div>
+            <div class="label">({{ label }})</div>
+
+            <button id="getSolutionBtn" class="button"
+                    data-score="{{ percentage }}"
+                    data-label="{{ label }}"
+                    data-q1="{{ q1_text }}"
+                    data-q2="{{ q2_text }}"
+                    data-q3="{{ q3_text }}"
+                    data-q4="{{ q4_text }}"
+                    data-q5="{{ q5_text }}"
+                    data-q6="{{ q6_text }}"
+                    data-q7="{{ q7_text }}">
+                Analisis & Solusi Stres
+            </button>
+            <a href="/" class="button secondary">← Ulangi Tes</a>
+        </div>
+
+        <div id="solutionContainer" class="solution-container" style="display: none;">
+            <h2>Analisis & Saran dari AI</h2>
+            <div id="solutionText" class="solution-text"></div>
+            <p class="disclaimer"><b>Penting:</b> Saran ini dibuat oleh AI dan bukan pengganti nasihat medis profesional. Jika Anda merasa stres berat atau berkelanjutan, harap hubungi psikolog atau konselor.</p>
+        </div>
+    </div>
+
+    <script>
+        const getSolutionBtn = document.getElementById('getSolutionBtn');
+        const solutionContainer = document.getElementById('solutionContainer');
+        const solutionText = document.getElementById('solutionText');
+
+        getSolutionBtn.addEventListener('click', async () => {
+            getSolutionBtn.disabled = true;
+            getSolutionBtn.textContent = 'Memuat saran...';
+            
+            const dataset = getSolutionBtn.dataset;
+            
+            solutionContainer.style.display = 'block';
+            solutionText.textContent = 'Sedang menghubungi konselor AI, mohon tunggu sebentar...';
+
+            try {
+                const response = await fetch('/get_solution', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataset),
+                });
+
+                if (!response.ok) throw new Error('Gagal mendapatkan respons dari server.');
+
+                const data = await response.json();
+                solutionText.textContent = data.solution;
+                getSolutionBtn.style.display = 'none';
+
+            } catch (error) {
+                console.error('Error:', error);
+                solutionText.textContent = 'Maaf, terjadi kesalahan saat memuat saran. Silakan coba muat ulang halaman.';
+            }
+        });
+    </script>
+</body>
+</html>

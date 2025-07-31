@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Selamat Datang - Deteksi Stres</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background-color: #0c111f;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        text-align: center;
+      }
+      .header-image {
+        width: 150px; /* Atur ukuran gambar */
+        height: 150px;
+        margin-bottom: 20px;
+      }
+      .container {
+        max-width: 600px;
+      }
+      h1 {
+        font-size: 2.5em;
+      }
+      p {
+        font-size: 1.2em;
+        color: #ccc;
+      }
+      .button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 15px 30px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        transition: background-color 0.3s;
+      }
+      .button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img
+        src="{{ url_for('static', filename='kepala.png') }}"
+        alt="Ilustrasi Kepala"
+        class="header-image"
+      />
+      <h2>Deteksi Stres Real-Time</h2>
+      <a href="/scan" class="button">Mulai Pindai Wajah</a>
+    </div>
+  </body>
+</html>
